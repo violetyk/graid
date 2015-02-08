@@ -2,19 +2,21 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"./config"
+	"github.com/violetyk/graid/config"
 )
 
 func main() {
-	config := config.Load()
-	fmt.Printf("%s\n", config.Origin.Server)
 
-	// http.HandleFunc("/", IndexHandler)
-	// http.ListenAndServe(":8080", nil)
+	// config := config.Load()
+	// fmt.Printf("%s\n", config.Origin.Server)
+
+	http.HandleFunc("/", IndexHandler)
+	http.ListenAndServe(":8080", nil)
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -45,5 +47,14 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("%v\n", m)
 	// fmt.Printf("%v\n", m["k"][0])
 
-	fmt.Fprint(w, "Hello world")
+	config := config.Load()
+	url := config.Origin.Server + u.Path
+	response, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer response.Body.Close()
+
+	io.Copy(w, response.Body)
+	// fmt.Fprint(w, "Hello world")
 }
