@@ -5,11 +5,16 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"./config"
 )
 
 func main() {
-	http.HandleFunc("/", IndexHandler)
-	http.ListenAndServe(":8080", nil)
+	config := config.Load()
+	fmt.Printf("%s\n", config.Origin.Server)
+
+	// http.HandleFunc("/", IndexHandler)
+	// http.ListenAndServe(":8080", nil)
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
