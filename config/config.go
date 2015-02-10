@@ -3,11 +3,17 @@ package config
 import "github.com/BurntSushi/toml"
 
 type config struct {
+	Server server
 	Origin origin
 }
 
+type server struct {
+	Port           string `toml:"port"`
+	WorkerPoolSize int    `toml:"worker_pool_size"`
+}
+
 type origin struct {
-	Server string `toml:server`
+	Url string `toml:server`
 }
 
 var instance *config

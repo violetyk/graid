@@ -1,2 +1,6 @@
+[server]
+port = ":8080"
+worker_pool_size = 32
+
 [origin]
-server = "https://raw.githubusercontent.com/violetyk/graid/master/test_data"
+url = "https://raw.githubusercontent.com/violetyk/graid/master/test_data"
