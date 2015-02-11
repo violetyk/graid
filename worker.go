@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
+	"runtime"
 
 	"github.com/violetyk/graid/config"
 )
@@ -27,6 +29,7 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	// http://localhost:8080/example.com/hogehoge.png:e
 	// http://localhost:8080/example.com/hogehoge.png:e:c100,200,10,50
 
+	log.Println(runtime.NumGoroutine())
 	u, err := url.Parse(r.URL.String())
 	if err != nil {
 		panic(err)
