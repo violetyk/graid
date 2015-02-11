@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"log"
@@ -8,28 +8,28 @@ import (
 	"github.com/violetyk/graid/config"
 )
 
-type Job struct {
-	Response http.ResponseWriter
-	Request  *http.Request
+type job struct {
+	response http.ResponseWriter
+	request  *http.Request
 }
 
-type Jobs chan *Job
+type jobs chan *job
 
 type ImageHandler struct {
-	Jobs Jobs
+	jobs jobs
 }
 
 func NewImageHandler() *ImageHandler {
 
 	config := config.Load()
 
-	jobs := make(Jobs, config.Server.WorkerPoolSize)
+	jobs := make(jobs, config.Server.WorkerPoolSize)
 	for i := 1; i <= config.Server.WorkerPoolSize; i++ {
 		go worker(i, jobs)
 	}
 
 	return &ImageHandler{
-		Jobs: jobs,
+		jobs: jobs,
 	}
 }
 
@@ -37,11 +37,11 @@ func (handler *ImageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/favicon.ico" {
 		return
 	}
-	handler.Jobs <- &Job{Response: w, Request: r}
+	handler.jobs <- &job{response: w, request: r}
 }
 
-func worker(id int, jobs Jobs) {
+func worker(id int, jobs jobs) {
 	for job := range jobs {
-		log.Println("worker", id, "GR", runtime.NumGoroutine(), "processing job", job.Request.URL.String())
+		log.Println("worker", id, "GR", runtime.NumGoroutine(), "processing job", job.request.URL.String())
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/violetyk/graid/config"
+	. "github.com/violetyk/graid/handler"
 )
 
 type Graid struct {
