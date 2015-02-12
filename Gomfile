@@ -1,1 +1,8 @@
+#  vim: set et fenc=utf-8 ff=unix ft=ruby sts=2 sw=2 ts=2 : 
+
 gom 'github.com/BurntSushi/toml'
+
+group :development do
+  gom 'github.com/k0kubun/pp'
+  gom 'github.com/mattn/go-colorable'
+end
