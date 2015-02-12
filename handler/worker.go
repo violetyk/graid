@@ -1,12 +1,10 @@
-package main
+package handler
 
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
-	"runtime"
 
 	"github.com/violetyk/graid/config"
 )
@@ -22,14 +20,15 @@ func NewWorker(id int) *Worker {
 }
 
 func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
+
 	// http://localhost:8080/xx/yy/zz/hogehoge.png:e?hoge=fuga&k=v#f
 	// http://localhost:8080/hogehoge.png
 	// http://localhost:8080/path/to/hogehoge.png:w50:w100
 	// http://localhost:8080/path/to/hogehoge.png:c100,200,10,50
-	// http://localhost:8080/example.com/hogehoge.png:e
-	// http://localhost:8080/example.com/hogehoge.png:e:c100,200,10,50
+	// http://localhost:8080/http://example.com/hogehoge.png
+	// http://localhost:8080/example.com/hogehoge.png:c100,200,10,50
 
-	log.Println(runtime.NumGoroutine())
+	// log.Println(runtime.NumGoroutine())
 	u, err := url.Parse(r.URL.String())
 	if err != nil {
 		panic(err)
