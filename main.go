@@ -1,6 +1,10 @@
 package main
 
-import "runtime"
+import (
+	"runtime"
+
+	. "github.com/violetyk/graid/server"
+)
 
 func init() {
 	cpus := runtime.NumCPU()
