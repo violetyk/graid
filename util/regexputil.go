@@ -1,6 +1,9 @@
 package regexputil
 
-import "regexp"
+import (
+	"regexp"
+	"strconv"
+)
 
 type RegexpUtil struct {
 	r *regexp.Regexp
@@ -10,6 +13,21 @@ func Compile(expr string) (ru *RegexpUtil, err error) {
 	r, err := regexp.Compile(expr)
 	ru = &RegexpUtil{r}
 	return
+}
+
+func MustCompile(expr string) *RegexpUtil {
+	r, err := regexp.Compile(expr)
+	if err != nil {
+		panic(`regexp: Compile(` + quote(expr) + `): ` + err.Error())
+	}
+	return &RegexpUtil{r}
+}
+
+func quote(s string) string {
+	if strconv.CanBackquote(s) {
+		return "`" + s + "`"
+	}
+	return strconv.Quote(s)
 }
 
 func (ru *RegexpUtil) FindStringSubmatchMap(s string) map[string]string {
