@@ -4,6 +4,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
+
+	"github.com/violetyk/graid/config"
 )
 
 type Worker struct {
@@ -29,6 +31,12 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	if !worker.Query.Parse(r.URL.String()) {
 		errors.New("TODO: return 404")
+	}
+
+	config := config.Load()
+
+	if config.Cache.Enable {
+
 	}
 
 	response, err := http.Get(worker.Query.SourceUrl)

@@ -1,15 +1,22 @@
 package config
 
+// singleton pattern
+
 import "github.com/BurntSushi/toml"
 
 type config struct {
 	Server server
+	Cache  cache
 	Origin origin
 }
 
 type server struct {
 	Port           string `toml:"port"`
 	WorkerPoolSize int    `toml:"worker_pool_size"`
+}
+
+type cache struct {
+	Enable bool `toml:"enable"`
 }
 
 type origin struct {
