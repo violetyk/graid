@@ -1,44 +1,24 @@
-package regexputil
+package util
 
-import (
-	"regexp"
-	"strconv"
-)
+import . "regexp"
 
 type RegexpUtil struct {
-	r *regexp.Regexp
+	*Regexp
 }
 
-func Compile(expr string) (ru *RegexpUtil, err error) {
-	r, err := regexp.Compile(expr)
-	ru = &RegexpUtil{r}
-	return
-}
-
-func MustCompile(expr string) *RegexpUtil {
-	r, err := regexp.Compile(expr)
-	if err != nil {
-		panic(`regexp: Compile(` + quote(expr) + `): ` + err.Error())
-	}
+func NewRegexpUtil(r *Regexp) *RegexpUtil {
 	return &RegexpUtil{r}
 }
 
-func quote(s string) string {
-	if strconv.CanBackquote(s) {
-		return "`" + s + "`"
-	}
-	return strconv.Quote(s)
-}
-
-func (ru *RegexpUtil) FindStringSubmatchMap(s string) map[string]string {
+func (r *RegexpUtil) FindStringSubmatchMap(s string) map[string]string {
 	captures := make(map[string]string)
 
-	match := ru.r.FindStringSubmatch(s)
+	match := r.FindStringSubmatch(s)
 	if match == nil {
 		return captures
 	}
 
-	for i, name := range ru.r.SubexpNames() {
+	for i, name := range r.SubexpNames() {
 		if i == 0 || len(name) == 0 {
 			continue
 		}

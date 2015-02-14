@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/violetyk/graid/config"
@@ -26,8 +27,8 @@ func (query *Query) Clear() {
 	query.Params = make(map[string]string)
 }
 
-var regexp_protocol *regexputil.RegexpUtil = regexputil.MustCompile(`^/(?P<protocol>http|https):/`)
-var regexp_params *regexputil.RegexpUtil = regexputil.MustCompile(`(?P<operator>^[a-z]+)(?P<value>[0-9,]+$)`)
+var regexp_protocol *util.RegexpUtil = &util.RegexpUtil{regexp.MustCompile(`^/(?P<protocol>http|https):/`)}
+var regexp_params *util.RegexpUtil = &util.RegexpUtil{regexp.MustCompile(`(?P<operator>^[a-z]+)(?P<value>[0-9,]+$)`)}
 
 func (query *Query) Parse(urlString string) bool {
 
