@@ -1,11 +1,14 @@
 package cache
 
-// embed Cache
+import "log"
+
 type FileEngine struct {
-	*Cache
 }
 
-// implements CacheEngine
-func (self *Cache) WriteCache() {
+func NewFileEngine() *FileEngine {
+	return &FileEngine{}
+}
 
+func (e *FileEngine) Write() {
+	log.Println("write cache to file")
 }

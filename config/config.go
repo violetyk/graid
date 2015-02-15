@@ -16,7 +16,8 @@ type server struct {
 }
 
 type cache struct {
-	Enable bool `toml:"enable"`
+	Enable bool   `toml:"enable"`
+	Engine string `toml:"engine"`
 }
 
 type origin struct {

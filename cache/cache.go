@@ -1,22 +1,43 @@
 package cache
 
-// client-specified self pattern
+import (
+	"errors"
+	"strings"
+
+	"github.com/violetyk/graid/config"
+)
 
 type CacheEngine interface {
-	WriteCache()
-	ReadCache()
-	DeleteCache()
+	// Exists(source string) bool
+	Write()
+	// Read()
+	// Delete()
 }
 
 type Cache struct {
+	engine CacheEngine
 }
 
-func (self *Cache) Write(engine CacheEngine) {
-	engine.WriteCache()
+func NewCache() *Cache {
+	config := config.Load()
 
+	var e CacheEngine
+	switch strings.ToLower(config.Cache.Engine) {
+	case "file":
+		// TODO: give config, setup file engine
+		e = NewFileEngine()
+	case "redis":
+		e = NewRedisEngine()
+	}
+
+	_, ok := e.(CacheEngine)
+	if !ok {
+		panic(errors.New(`cache engine is not available.`))
+	}
+
+	return &Cache{engine: e}
 }
 
-// func main() {
-// engine := &FileEngine{}
-// engine.Write(engine)
-// }
+func (c *Cache) Write() {
+	c.engine.Write()
+}

@@ -5,19 +5,30 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/violetyk/graid/cache"
 	"github.com/violetyk/graid/config"
 )
 
 type Worker struct {
-	Id    int
-	Query *Query
+	Id       int
+	Query    *Query
+	Cache    *cache.Cache
+	useCache bool
 }
 
 func NewWorker(id int) *Worker {
-	return &Worker{
+	w := &Worker{
 		Id:    id,
 		Query: NewQuery(),
 	}
+
+	config := config.Load()
+	if config.Cache.Enable {
+		w.useCache = true
+		w.Cache = cache.NewCache()
+	}
+
+	return w
 }
 
 func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
@@ -31,12 +42,6 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	if !worker.Query.Parse(r.URL.String()) {
 		errors.New("TODO: return 404")
-	}
-
-	config := config.Load()
-
-	if config.Cache.Enable {
-
 	}
 
 	response, err := http.Get(worker.Query.SourceUrl)
