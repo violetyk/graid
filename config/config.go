@@ -16,8 +16,13 @@ type server struct {
 }
 
 type cache struct {
-	Enable bool   `toml:"enable"`
-	Engine string `toml:"engine"`
+	Enable bool      `toml:"enable"`
+	Engine string    `toml:"engine"`
+	File   cacheFile `toml:"file"`
+}
+
+type cacheFile struct {
+	Path string `toml:"path"`
 }
 
 type origin struct {

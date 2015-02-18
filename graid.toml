@@ -6,5 +6,10 @@ worker_pool_size = 32
 enable = true
 engine = "File" # File or Redis
 
+  [cache.file]
+    path = "/var/tmp/graid"
+
+  [cache.redis]
+
 [origin]
 url = "https://raw.githubusercontent.com/violetyk/graid/master/test_data"

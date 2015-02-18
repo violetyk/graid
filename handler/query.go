@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/url"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -12,6 +13,7 @@ import (
 type Query struct {
 	Raw              string
 	SourceUrl        string
+	SourceExt        string
 	IsExternalSource bool
 	Params           map[string]string
 }
@@ -23,6 +25,7 @@ func NewQuery() *Query {
 func (query *Query) Clear() {
 	query.Raw = ""
 	query.SourceUrl = ""
+	query.SourceExt = ""
 	query.IsExternalSource = false
 	query.Params = make(map[string]string)
 }
@@ -39,6 +42,8 @@ func (query *Query) Parse(urlString string) bool {
 	if err != nil {
 		return false
 	}
+
+	query.SourceExt = filepath.Ext(u.Path)
 
 	s := strings.Split(u.Path, ":")
 

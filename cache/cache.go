@@ -2,14 +2,15 @@ package cache
 
 import (
 	"errors"
+	"io"
 	"strings"
 
 	"github.com/violetyk/graid/config"
 )
 
 type CacheEngine interface {
-	// Exists(source string) bool
-	Write()
+	Exists(keys []string) bool
+	Write(reader io.Reader, keys []string) error
 	// Read()
 	// Delete()
 }
@@ -24,10 +25,9 @@ func NewCache() *Cache {
 	var e CacheEngine
 	switch strings.ToLower(config.Cache.Engine) {
 	case "file":
-		// TODO: give config, setup file engine
-		e = NewFileEngine()
-	case "redis":
-		e = NewRedisEngine()
+		e = NewFileEngine(config.Cache.File.Path)
+		// case "redis":
+		// e = NewRedisEngine()
 	}
 
 	_, ok := e.(CacheEngine)
@@ -38,6 +38,10 @@ func NewCache() *Cache {
 	return &Cache{engine: e}
 }
 
-func (c *Cache) Write() {
-	c.engine.Write()
+func (c *Cache) Write(reader io.Reader, keys []string) error {
+	return c.engine.Write(reader, keys)
+}
+
+func (c *Cache) Exists(keys []string) bool {
+	return c.engine.Exists(keys)
 }
