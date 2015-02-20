@@ -1,13 +1,14 @@
-package handler
+package main
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
+	"encoding/json"
+	"io"
 	"net/url"
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	"github.com/violetyk/graid/config"
-	"github.com/violetyk/graid/util"
 )
 
 type Query struct {
@@ -30,8 +31,8 @@ func (query *Query) Clear() {
 	query.Params = make(map[string]string)
 }
 
-var regexp_protocol *util.RegexpUtil = &util.RegexpUtil{regexp.MustCompile(`^/(?P<protocol>http|https):/`)}
-var regexp_params *util.RegexpUtil = &util.RegexpUtil{regexp.MustCompile(`(?P<operator>^[a-z]+)(?P<value>[0-9,]+$)`)}
+var regexp_protocol *RegexpUtil = &RegexpUtil{regexp.MustCompile(`^/(?P<protocol>http|https):/`)}
+var regexp_params *RegexpUtil = &RegexpUtil{regexp.MustCompile(`(?P<operator>^[a-z]+)(?P<value>[0-9,]+$)`)}
 
 func (query *Query) Parse(urlString string) bool {
 
@@ -53,7 +54,7 @@ func (query *Query) Parse(urlString string) bool {
 		query.SourceUrl = match_protocol["protocol"] + ":/" + s[1]
 	} else {
 		query.IsExternalSource = false
-		query.SourceUrl = config.Load().Origin.Url + s[0]
+		query.SourceUrl = LoadConfig().Origin.Url + s[0]
 	}
 
 	var match_param map[string]string = map[string]string{}
@@ -65,4 +66,20 @@ func (query *Query) Parse(urlString string) bool {
 	}
 
 	return true
+}
+
+func (query *Query) StringQueryParams() string {
+	length := len(query.Params)
+	if length == 0 {
+		return "default"
+	}
+
+	j, err := json.Marshal(query.Params)
+	if err != nil {
+		return "default"
+	}
+
+	h := sha1.New()
+	io.WriteString(h, string(j))
+	return hex.EncodeToString(h.Sum(nil))
 }

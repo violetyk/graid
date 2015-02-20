@@ -2,8 +2,6 @@ package main
 
 import (
 	"runtime"
-
-	. "github.com/violetyk/graid/server"
 )
 
 func init() {

@@ -1,10 +1,7 @@
-package server
+package main
 
 import (
 	"net/http"
-
-	"github.com/violetyk/graid/config"
-	. "github.com/violetyk/graid/handler"
 )
 
 type Graid struct {
@@ -12,7 +9,7 @@ type Graid struct {
 }
 
 func NewGraid() *Graid {
-	config := config.Load()
+	config := LoadConfig()
 
 	serveMux := http.NewServeMux()
 	serveMux.Handle("/", NewImageHandler())

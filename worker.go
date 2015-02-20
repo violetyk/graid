@@ -1,23 +1,18 @@
-package handler
+package main
 
 import (
-	"crypto/sha1"
-	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 
-	"github.com/violetyk/graid/cache"
-	"github.com/violetyk/graid/config"
+	// "github.com/violetyk/graid/config"
 )
 
 type Worker struct {
 	Id       int
 	Query    *Query
-	Cache    *cache.Cache
+	Cache    *Cache
 	useCache bool
 }
 
@@ -27,10 +22,10 @@ func NewWorker(id int) *Worker {
 		Query: NewQuery(),
 	}
 
-	config := config.Load()
+	config := LoadConfig()
 	if config.Cache.Enable {
 		w.useCache = true
-		w.Cache = cache.NewCache()
+		w.Cache = NewCache()
 	}
 
 	return w
@@ -43,16 +38,14 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	// http://localhost:8080/path/to/hogehoge.png:w50:w100
 	// http://localhost:8080/path/to/hogehoge.png:c100,200,10,50
 	// http://localhost:8080/http://example.com/hogehoge.png
-	// http://localhost:8080/example.com/hogehoge.png:c100,200,10,50
+	// http://localhost:8080/http://example.com/hogehoge.png:c100,200,10,50
 
 	if !worker.Query.Parse(r.URL.String()) {
 		errors.New("TODO: return 404")
 	}
 
-	var cache_keys []string
 	if worker.useCache {
-		cache_keys = []string{worker.stringQuerySourceUrl(), worker.stringQueryParams()}
-		if worker.Cache.Exists(cache_keys) {
+		if worker.Cache.Exists(worker.Query) {
 			log.Println("cache exists")
 		}
 	}
@@ -64,28 +57,12 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	defer response.Body.Close()
 
 	if worker.useCache {
-		worker.Cache.Write(response.Body, cache_keys)
+		worker.Cache.Write(worker.Query, response.Body)
 	}
 
 	io.Copy(w, response.Body)
 }
 
-func (worker *Worker) stringQuerySourceUrl() string {
-	return url.QueryEscape(worker.Query.SourceUrl)
-}
-
-func (worker *Worker) stringQueryParams() string {
-	length := len(worker.Query.Params)
-	if length == 0 {
-		return "default"
-	}
-
-	j, err := json.Marshal(worker.Query.Params)
-	if err != nil {
-		return "default"
-	}
-
-	h := sha1.New()
-	io.WriteString(h, string(j))
-	return hex.EncodeToString(h.Sum(nil))
-}
+// func (worker *Worker) stringQuerySourceUrl() string {
+// return url.QueryEscape(worker.Query.SourceUrl)
+// }

@@ -1,4 +1,4 @@
-package config
+package main
 
 // singleton pattern
 
@@ -31,7 +31,7 @@ type origin struct {
 
 var instance *config
 
-func Load() *config {
+func LoadConfig() *config {
 	if instance == nil {
 		var c config
 		_, err := toml.DecodeFile("graid.toml", &c)

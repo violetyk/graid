@@ -1,9 +1,7 @@
-package handler
+package main
 
 import (
 	"net/http"
-
-	"github.com/violetyk/graid/config"
 )
 
 type WorkerPool chan *Worker
@@ -14,7 +12,7 @@ type ImageHandler struct {
 
 func NewImageHandler() *ImageHandler {
 
-	config := config.Load()
+	config := LoadConfig()
 
 	workerPool := make(WorkerPool, config.Server.WorkerPoolSize)
 	for i := 1; i <= config.Server.WorkerPoolSize; i++ {
