@@ -2,13 +2,12 @@ package main
 
 import (
 	"errors"
-	"io"
 	"strings"
 )
 
 type CacheEngine interface {
 	Exists(key string) bool
-	Write(key string, reader io.Reader) error
+	Write(key string, data []byte) error
 	// Read()
 	// Delete()
 }
@@ -50,8 +49,8 @@ func NewCache() *Cache {
 	return &Cache{engine: e, adapter: a}
 }
 
-func (cache *Cache) Write(query *Query, reader io.Reader) error {
-	return cache.engine.Write(cache.adapter.CacheKey(query), reader)
+func (cache *Cache) Write(query *Query, data []byte) error {
+	return cache.engine.Write(cache.adapter.CacheKey(query), data)
 }
 
 func (cache *Cache) Exists(query *Query) bool {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 )
@@ -20,7 +19,7 @@ func (engine *FileEngine) Exists(path string) bool {
 	return true
 }
 
-func (engine *FileEngine) Write(path string, reader io.Reader) (err error) {
+func (engine *FileEngine) Write(path string, data []byte) (err error) {
 	if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
 		return err
 	}
@@ -31,6 +30,6 @@ func (engine *FileEngine) Write(path string, reader io.Reader) (err error) {
 	}
 	defer file.Close()
 
-	_, err = io.Copy(file, reader)
+	_, err = file.Write(data)
 	return err
 }

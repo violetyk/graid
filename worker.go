@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -52,15 +54,18 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	response, err := http.Get(worker.Query.SourceUrl)
 	if err != nil {
-		panic(err)
+		errors.New("TODO: return 404")
 	}
 	defer response.Body.Close()
 
 	if worker.useCache {
-		worker.Cache.Write(worker.Query, response.Body)
+		data, err := ioutil.ReadAll(response.Body)
+		if err == nil {
+			worker.Cache.Write(worker.Query, data)
+		}
+		io.Copy(w, bytes.NewReader(data))
 	}
 
-	io.Copy(w, response.Body)
 }
 
 // func (worker *Worker) stringQuerySourceUrl() string {

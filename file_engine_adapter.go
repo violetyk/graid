@@ -1,8 +1,20 @@
 package main
 
-import "os"
+import (
+	"os"
+	"strings"
+)
+
+var pathSeparator string = string(os.PathSeparator)
+var pathReplacer *strings.Replacer = strings.NewReplacer(
+	"http:/", "",
+	"https:/", "",
+	"/", pathSeparator,
+	"..", "",
+)
 
 type FileEngineAdapter struct {
+	pathReplacer *strings.Replacer
 }
 
 func NewFileEngineAdapter() *FileEngineAdapter {
@@ -10,8 +22,5 @@ func NewFileEngineAdapter() *FileEngineAdapter {
 }
 
 func (adapter *FileEngineAdapter) CacheKey(query *Query) string {
-	config := LoadConfig()
-	path := config.Cache.File.Path
-	// TODO: directory traversal
-	return path + string(os.PathSeparator) + query.SourceUrl + string(os.PathSeparator) + query.StringQueryParams()
+	return LoadConfig().Cache.File.Path + pathSeparator + pathReplacer.Replace(query.SourceUrl) + pathSeparator + query.StringQueryParams()
 }
