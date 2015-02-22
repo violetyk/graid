@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -32,4 +33,13 @@ func (engine *FileEngine) Write(path string, data []byte) (err error) {
 
 	_, err = file.Write(data)
 	return err
+}
+
+func (engine *FileEngine) Read(path string) (data []byte, err error) {
+	file, err := os.Open(path)
+	if err == nil {
+		data, err = ioutil.ReadAll(file)
+	}
+	defer file.Close()
+	return data, err
 }

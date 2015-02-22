@@ -8,7 +8,7 @@ import (
 type CacheEngine interface {
 	Exists(key string) bool
 	Write(key string, data []byte) error
-	// Read()
+	Read(key string) ([]byte, error)
 	// Delete()
 }
 
@@ -55,4 +55,8 @@ func (cache *Cache) Write(query *Query, data []byte) error {
 
 func (cache *Cache) Exists(query *Query) bool {
 	return cache.engine.Exists(cache.adapter.CacheKey(query))
+}
+
+func (cache *Cache) Read(query *Query) ([]byte, error) {
+	return cache.engine.Read(cache.adapter.CacheKey(query))
 }

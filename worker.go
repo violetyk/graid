@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	// "github.com/violetyk/graid/config"
 )
 
 type Worker struct {
@@ -33,38 +31,41 @@ func NewWorker(id int) *Worker {
 	return w
 }
 
-func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
+// http://localhost:8080/xx/yy/zz/hogehoge.png:e?hoge=fuga&k=v#f
+// http://localhost:8080/hogehoge.png
+// http://localhost:8080/path/to/hogehoge.png:w50:w100
+// http://localhost:8080/path/to/hogehoge.png:c100,200,10,50
+// http://localhost:8080/http://example.com/hogehoge.png
+// http://localhost:8080/http://example.com/hogehoge.png:c100,200,10,50
 
-	// http://localhost:8080/xx/yy/zz/hogehoge.png:e?hoge=fuga&k=v#f
-	// http://localhost:8080/hogehoge.png
-	// http://localhost:8080/path/to/hogehoge.png:w50:w100
-	// http://localhost:8080/path/to/hogehoge.png:c100,200,10,50
-	// http://localhost:8080/http://example.com/hogehoge.png
-	// http://localhost:8080/http://example.com/hogehoge.png:c100,200,10,50
+func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	if !worker.Query.Parse(r.URL.String()) {
 		errors.New("TODO: return 404")
 	}
 
-	if worker.useCache {
-		if worker.Cache.Exists(worker.Query) {
-			log.Println("cache exists")
-		}
-	}
+	var data []byte
+	var err error
 
-	response, err := http.Get(worker.Query.SourceUrl)
+	if worker.useCache && worker.Cache.Exists(worker.Query) {
+		data, err = worker.Cache.Read(worker.Query)
+		log.Println("load from cache")
+	} else {
+		response, err := http.Get(worker.Query.SourceUrl)
+		if err == nil {
+			data, err = ioutil.ReadAll(response.Body)
+		}
+		defer response.Body.Close()
+	}
 	if err != nil {
 		errors.New("TODO: return 404")
 	}
-	defer response.Body.Close()
 
+	// TODO: if image changed, write cache
 	if worker.useCache {
-		data, err := ioutil.ReadAll(response.Body)
-		if err == nil {
-			worker.Cache.Write(worker.Query, data)
-		}
-		io.Copy(w, bytes.NewReader(data))
+		worker.Cache.Write(worker.Query, data)
 	}
+	io.Copy(w, bytes.NewReader(data))
 
 }
 
