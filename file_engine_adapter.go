@@ -14,7 +14,6 @@ var pathReplacer *strings.Replacer = strings.NewReplacer(
 )
 
 type FileEngineAdapter struct {
-	pathReplacer *strings.Replacer
 }
 
 func NewFileEngineAdapter() *FileEngineAdapter {

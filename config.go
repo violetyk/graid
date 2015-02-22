@@ -1,8 +1,8 @@
 package main
 
-// singleton pattern
-
 import "github.com/BurntSushi/toml"
+
+// singleton pattern
 
 type config struct {
 	Server server
@@ -16,13 +16,19 @@ type server struct {
 }
 
 type cache struct {
-	Enable bool      `toml:"enable"`
-	Engine string    `toml:"engine"`
-	File   cacheFile `toml:"file"`
+	Enable bool       `toml:"enable"`
+	Engine string     `toml:"engine"`
+	File   cacheFile  `toml:"file"`
+	Redis  cacheRedis `toml:"redis"`
 }
 
 type cacheFile struct {
 	Path string `toml:"path"`
+}
+
+type cacheRedis struct {
+	Host string `toml:"host"`
+	Port string `toml:"port"`
 }
 
 type origin struct {

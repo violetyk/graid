@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -49,7 +48,6 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	if worker.useCache && worker.Cache.Exists(worker.Query) {
 		data, err = worker.Cache.Read(worker.Query)
-		log.Println("load from cache")
 	} else {
 		response, err := http.Get(worker.Query.SourceUrl)
 		if err == nil {
@@ -65,10 +63,6 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	if worker.useCache {
 		worker.Cache.Write(worker.Query, data)
 	}
+
 	io.Copy(w, bytes.NewReader(data))
-
 }
-
-// func (worker *Worker) stringQuerySourceUrl() string {
-// return url.QueryEscape(worker.Query.SourceUrl)
-// }
