@@ -3,7 +3,7 @@ port = ":8080"
 worker_pool_size = 32
 
 [cache]
-enable = true
+enable = false
 engine = "Redis" # File or Redis
 
   [cache.file]

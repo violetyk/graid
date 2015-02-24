@@ -9,16 +9,18 @@ import (
 )
 
 type Worker struct {
-	Id       int
-	Query    *Query
-	Cache    *Cache
-	useCache bool
+	Id        int
+	Query     *Query
+	Cache     *Cache
+	Processor *Processor
+	useCache  bool
 }
 
 func NewWorker(id int) *Worker {
 	w := &Worker{
-		Id:    id,
-		Query: NewQuery(),
+		Id:        id,
+		Query:     NewQuery(),
+		Processor: NewProcessor(),
 	}
 
 	config := LoadConfig()
@@ -39,6 +41,7 @@ func NewWorker(id int) *Worker {
 
 func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
+	// parse query
 	if !worker.Query.Parse(r.URL.String()) {
 		errors.New("TODO: return 404")
 	}
@@ -46,6 +49,7 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	var data []byte
 	var err error
 
+	// ready image data
 	if worker.useCache && worker.Cache.Exists(worker.Query) {
 		data, err = worker.Cache.Read(worker.Query)
 	} else {
@@ -58,6 +62,14 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		errors.New("TODO: return 404")
 	}
+
+	image, err := NewImage(data, worker.Query.SourceFormat)
+	if err != nil {
+		errors.New("TODO: return 404")
+	}
+
+	// process
+	worker.Processor.Execute(image, worker.Query)
 
 	// TODO: if image changed, write cache
 	if worker.useCache {

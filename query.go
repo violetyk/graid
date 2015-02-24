@@ -14,7 +14,7 @@ import (
 type Query struct {
 	Raw              string
 	SourceUrl        string
-	SourceExt        string
+	SourceFormat     string
 	IsExternalSource bool
 	Params           map[string]string
 }
@@ -26,7 +26,7 @@ func NewQuery() *Query {
 func (query *Query) Clear() {
 	query.Raw = ""
 	query.SourceUrl = ""
-	query.SourceExt = ""
+	query.SourceFormat = ""
 	query.IsExternalSource = false
 	query.Params = make(map[string]string)
 }
@@ -44,7 +44,7 @@ func (query *Query) Parse(urlString string) bool {
 		return false
 	}
 
-	query.SourceExt = filepath.Ext(u.Path)
+	query.SourceFormat = filepath.Ext(u.Path)[1:]
 
 	s := strings.Split(u.Path, ":")
 
