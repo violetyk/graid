@@ -15,6 +15,7 @@ var SupportOperators map[string]string = map[string]string{
 	"w": "resize",
 	"h": "resize",
 	"c": "crop",
+	"q": "quality", // only jpeg
 }
 
 type Query struct {

@@ -18,6 +18,7 @@ func NewProcessor() *Processor {
 
 func (processor *Processor) Execute(src *Image, dst io.Writer, query *Query) {
 	processor.gift.Empty()
+	quality := 100
 
 	if query.Count() > 0 {
 		// resize
@@ -38,15 +39,25 @@ func (processor *Processor) Execute(src *Image, dst io.Writer, query *Query) {
 			}
 		}
 
+		// quality
+		if query.Has("q") {
+			q := query.GetInt("q")
+			if q > 0 && q < 100 {
+				quality = q
+			}
+		}
+
 		// Draw
 		if len(processor.gift.Filters) > 0 {
 			rgba := image.NewRGBA(processor.gift.Bounds(src.Object.Bounds()))
 			processor.gift.Draw(rgba, src.Object)
-			jpeg.Encode(dst, rgba, nil)
+
+			jpeg.Encode(dst, rgba, &jpeg.Options{Quality: quality})
+
 			return
 		}
 	}
 
 	// default
-	jpeg.Encode(dst, src.Object, nil)
+	jpeg.Encode(dst, src.Object, &jpeg.Options{Quality: quality})
 }
