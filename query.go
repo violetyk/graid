@@ -20,6 +20,7 @@ var SupportOperators map[string]string = map[string]string{
 	"sepia":        "sepia",
 	"contrast":     "contrast",
 	"brightness":   "brightness",
+	"saturation":   "saturation",
 	"colorize":     "colorize",
 	"colorbalance": "colorbalance",
 }
