@@ -6,7 +6,14 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
+
+var httpClient *http.Client
+
+func init() {
+	httpClient = new(http.Client)
+}
 
 type Worker struct {
 	Id        int
@@ -32,13 +39,6 @@ func NewWorker(id int) *Worker {
 	return w
 }
 
-// http://localhost:8080/xx/yy/zz/hogehoge.png:e?hoge=fuga&k=v#f
-// http://localhost:8080/hogehoge.png
-// http://localhost:8080/path/to/hogehoge.png:w50:w100
-// http://localhost:8080/path/to/hogehoge.png:c100,200,10,50
-// http://localhost:8080/http://example.com/hogehoge.png
-// http://localhost:8080/http://example.com/hogehoge.png:c100,200,10,50
-
 func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	// parse query
@@ -55,7 +55,7 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	if worker.useCache && worker.Cache.Exists(worker.Query) {
 		data, err = worker.Cache.Read(worker.Query)
 	} else {
-		response, err := http.Get(worker.Query.SourceUrl)
+		response, err := httpClient.Get(worker.Query.SourceUrl)
 		if err == nil {
 			data, err = ioutil.ReadAll(response.Body)
 		}
@@ -82,5 +82,7 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// response
+	w.Header().Set("Content-Type", http.DetectContentType(dst.Bytes()))
+	w.Header().Set("Content-Length", strconv.Itoa(dst.Len()))
 	io.Copy(w, dst)
 }

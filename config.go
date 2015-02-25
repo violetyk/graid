@@ -11,8 +11,9 @@ type config struct {
 }
 
 type server struct {
-	Port           string `toml:"port"`
-	WorkerPoolSize int    `toml:"worker_pool_size"`
+	Port             string `toml:"port"`
+	WorkerPoolSize   int    `toml:"worker_pool_size"`
+	IdleConnsPerHost int    `toml:"idle_conns_per_host"`
 }
 
 type cache struct {
