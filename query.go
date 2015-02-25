@@ -12,15 +12,16 @@ import (
 )
 
 var SupportOperators map[string]string = map[string]string{
-	"w":          "resize",
-	"h":          "resize",
-	"c":          "crop",
-	"q":          "quality", // only jpeg
-	"grayscale":  "grayscale",
-	"sepia":      "sepia",
-	"contrast":   "contrast",
-	"brightness": "brightness",
-	"saturation": "saturation",
+	"w":            "resize",
+	"h":            "resize",
+	"c":            "crop",
+	"q":            "quality", // only jpeg
+	"grayscale":    "grayscale",
+	"sepia":        "sepia",
+	"contrast":     "contrast",
+	"brightness":   "brightness",
+	"colorize":     "colorize",
+	"colorbalance": "colorbalance",
 }
 
 type Query struct {

@@ -69,7 +69,24 @@ func (processor *Processor) Execute(src *Image, dst io.Writer, query *Query) {
 		if query.Has("saturation") {
 			saturation := query.GetInt("saturation")
 			processor.gift.Add(gift.Saturation(float32(saturation)))
-			log.Println(saturation)
+		}
+
+		// colorize
+		if query.Has("colorize") {
+			colorize := query.GetIntArray("colorize")
+			if len(colorize) == 3 {
+				processor.gift.Add(gift.Colorize(float32(colorize[0]), float32(colorize[1]), float32(colorize[2])))
+			}
+			log.Println(colorize)
+		}
+
+		// colorbalance
+		if query.Has("colorbalance") {
+			colorbalance := query.GetIntArray("colorbalance")
+			if len(colorbalance) == 3 {
+				processor.gift.Add(gift.ColorBalance(float32(colorbalance[0]), float32(colorbalance[1]), float32(colorbalance[2])))
+			}
+			log.Println(colorbalance)
 		}
 
 		// quality
