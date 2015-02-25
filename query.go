@@ -12,10 +12,15 @@ import (
 )
 
 var SupportOperators map[string]string = map[string]string{
-	"w": "resize",
-	"h": "resize",
-	"c": "crop",
-	"q": "quality", // only jpeg
+	"w":          "resize",
+	"h":          "resize",
+	"c":          "crop",
+	"q":          "quality", // only jpeg
+	"grayscale":  "grayscale",
+	"sepia":      "sepia",
+	"contrast":   "contrast",
+	"brightness": "brightness",
+	"saturation": "saturation",
 }
 
 type Query struct {
@@ -37,7 +42,7 @@ func (query *Query) Clear() {
 }
 
 var regexp_protocol *RegexpUtil = &RegexpUtil{regexp.MustCompile(`^/(?P<protocol>http|https):/`)}
-var regexp_params *RegexpUtil = &RegexpUtil{regexp.MustCompile(`(?P<operator>^[a-z]+)(?P<value>[0-9,]+$)`)}
+var regexp_params *RegexpUtil = &RegexpUtil{regexp.MustCompile(`(?P<operator>^[a-z]+)(?P<value>[0-9,-]+$)`)}
 
 func (query *Query) Parse(urlString string) bool {
 

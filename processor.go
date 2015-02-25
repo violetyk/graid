@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/jpeg"
 	"io"
+	"log"
 
 	"github.com/disintegration/gift"
 )
@@ -37,6 +38,38 @@ func (processor *Processor) Execute(src *Image, dst io.Writer, query *Query) {
 			if len(c) == 4 {
 				processor.gift.Add(gift.Crop(image.Rect(c[0], c[1], c[2], c[3])))
 			}
+		}
+
+		// grayscale
+		if query.Has("grayscale") {
+			processor.gift.Add(gift.Grayscale())
+		}
+
+		// sepia
+		if query.Has("sepia") {
+			sepia := query.GetInt("sepia")
+			if sepia <= 100 {
+				processor.gift.Add(gift.Sepia(float32(sepia)))
+			}
+		}
+
+		// contrast
+		if query.Has("contrast") {
+			contrast := query.GetInt("contrast")
+			processor.gift.Add(gift.Contrast(float32(contrast)))
+		}
+
+		// brightness
+		if query.Has("brightness") {
+			brightness := query.GetInt("brightness")
+			processor.gift.Add(gift.Brightness(float32(brightness)))
+		}
+
+		// saturation
+		if query.Has("saturation") {
+			saturation := query.GetInt("saturation")
+			processor.gift.Add(gift.Saturation(float32(saturation)))
+			log.Println(saturation)
 		}
 
 		// quality
