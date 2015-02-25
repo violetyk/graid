@@ -49,6 +49,8 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	var data []byte
 	var err error
 
+	beCached := false
+
 	// ready image data
 	if worker.useCache && worker.Cache.Exists(worker.Query) {
 		data, err = worker.Cache.Read(worker.Query)
@@ -58,12 +60,14 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 			data, err = ioutil.ReadAll(response.Body)
 		}
 		defer response.Body.Close()
+		beCached = true
 	}
 	if err != nil {
 		errors.New("TODO: return 404")
 	}
 
-	image, err := NewImage(data, worker.Query.SourceFormat)
+	// image
+	image, err := NewImage(data)
 	if err != nil {
 		errors.New("TODO: return 404")
 	}
@@ -71,8 +75,8 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	// process
 	worker.Processor.Execute(image, worker.Query)
 
-	// TODO: if image changed, write cache
-	if worker.useCache {
+	// cache
+	if worker.useCache && beCached {
 		worker.Cache.Write(worker.Query, data)
 	}
 

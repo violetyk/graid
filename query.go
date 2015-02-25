@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/url"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -14,7 +13,6 @@ import (
 type Query struct {
 	Raw              string
 	SourceUrl        string
-	SourceFormat     string
 	IsExternalSource bool
 	Params           map[string]string
 }
@@ -26,7 +24,6 @@ func NewQuery() *Query {
 func (query *Query) Clear() {
 	query.Raw = ""
 	query.SourceUrl = ""
-	query.SourceFormat = ""
 	query.IsExternalSource = false
 	query.Params = make(map[string]string)
 }
@@ -43,8 +40,6 @@ func (query *Query) Parse(urlString string) bool {
 	if err != nil {
 		return false
 	}
-
-	query.SourceFormat = filepath.Ext(u.Path)[1:]
 
 	s := strings.Split(u.Path, ":")
 
