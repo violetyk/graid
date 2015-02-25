@@ -48,11 +48,17 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	var data []byte
 	var err error
+	var nocache bool
+
+	r.ParseForm()
+	if len(r.FormValue("nocache")) > 0 {
+		nocache = true
+	}
 
 	beCached := false
 
 	// ready image data
-	if worker.useCache && worker.Cache.Exists(worker.Query) {
+	if worker.useCache && !nocache && worker.Cache.Exists(worker.Query) {
 		data, err = worker.Cache.Read(worker.Query)
 	} else {
 		response, err := httpClient.Get(worker.Query.SourceUrl)
