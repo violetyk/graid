@@ -10,6 +10,12 @@ import (
 	"strings"
 )
 
+var SupportOperators map[string]string = map[string]string{
+	"w": "resize",
+	"h": "resize",
+	"c": "crop",
+}
+
 type Query struct {
 	Raw              string
 	SourceUrl        string
@@ -52,11 +58,13 @@ func (query *Query) Parse(urlString string) bool {
 		query.SourceUrl = LoadConfig().Origin.Url + s[0]
 	}
 
-	var match_param map[string]string = map[string]string{}
+	match_param := map[string]string{}
 	for _, v := range s {
 		match_param = regexp_params.FindStringSubmatchMap(v)
 		if len(match_param) > 0 {
-			query.Params[match_param["operator"]] = match_param["value"]
+			if _, ok := SupportOperators[match_param["operator"]]; ok {
+				query.Params[match_param["operator"]] = match_param["value"]
+			}
 		}
 	}
 
