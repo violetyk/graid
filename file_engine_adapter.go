@@ -21,5 +21,5 @@ func NewFileEngineAdapter() *FileEngineAdapter {
 }
 
 func (adapter *FileEngineAdapter) CacheKey(query *Query) string {
-	return LoadConfig().Cache.File.Path + pathSeparator + pathReplacer.Replace(query.SourceUrl) + pathSeparator + query.StringQueryParams()
+	return LoadConfig().Cache.File.Path + pathSeparator + pathReplacer.Replace(query.SourceUrl) + pathSeparator + query.Stringify()
 }

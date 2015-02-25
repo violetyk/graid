@@ -67,18 +67,20 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// image
-	image, err := NewImage(data)
+	src, err := NewImage(data)
 	if err != nil {
 		errors.New("TODO: return 404")
 	}
 
 	// process
-	worker.Processor.Execute(image, worker.Query)
+	dst := new(bytes.Buffer)
+	worker.Processor.Execute(src, dst, worker.Query)
 
 	// cache
 	if worker.useCache && beCached {
-		worker.Cache.Write(worker.Query, data)
+		go worker.Cache.Write(worker.Query, dst.Bytes())
 	}
 
-	io.Copy(w, bytes.NewReader(data))
+	// response
+	io.Copy(w, dst)
 }

@@ -14,7 +14,7 @@ const (
 
 type Image struct {
 	Format int
-	Object *image.Image
+	Object image.Image
 	Width  int
 	Height int
 }
@@ -49,7 +49,7 @@ func NewImage(data []byte) (self *Image, err error) {
 
 	return &Image{
 		Format: f,
-		Object: &i,
+		Object: i,
 		Width:  w,
 		Height: h,
 	}, err

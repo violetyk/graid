@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -20,7 +21,7 @@ type Query struct {
 	Raw              string
 	SourceUrl        string
 	IsExternalSource bool
-	Params           map[string]string
+	params           map[string]string
 }
 
 func NewQuery() *Query {
@@ -31,7 +32,7 @@ func (query *Query) Clear() {
 	query.Raw = ""
 	query.SourceUrl = ""
 	query.IsExternalSource = false
-	query.Params = make(map[string]string)
+	query.params = make(map[string]string)
 }
 
 var regexp_protocol *RegexpUtil = &RegexpUtil{regexp.MustCompile(`^/(?P<protocol>http|https):/`)}
@@ -63,7 +64,7 @@ func (query *Query) Parse(urlString string) bool {
 		match_param = regexp_params.FindStringSubmatchMap(v)
 		if len(match_param) > 0 {
 			if _, ok := SupportOperators[match_param["operator"]]; ok {
-				query.Params[match_param["operator"]] = match_param["value"]
+				query.params[match_param["operator"]] = match_param["value"]
 			}
 		}
 	}
@@ -71,13 +72,12 @@ func (query *Query) Parse(urlString string) bool {
 	return true
 }
 
-func (query *Query) StringQueryParams() string {
-	length := len(query.Params)
-	if length == 0 {
+func (query *Query) Stringify() string {
+	if query.Count() == 0 {
 		return "default"
 	}
 
-	j, err := json.Marshal(query.Params)
+	j, err := json.Marshal(query.params)
 	if err != nil {
 		return "default"
 	}
@@ -85,4 +85,30 @@ func (query *Query) StringQueryParams() string {
 	h := sha1.New()
 	io.WriteString(h, string(j))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+func (query *Query) Count() int {
+	return len(query.params)
+}
+
+func (query *Query) Has(operator string) bool {
+	_, exists := query.params[operator]
+	return exists
+}
+
+func (query *Query) GetInt(operator string) (value int) {
+	if v, exists := query.params[operator]; exists {
+		value, _ = strconv.Atoi(v)
+	}
+	return value
+}
+
+func (query *Query) GetIntArray(operator string) (values []int) {
+	if v, exists := query.params[operator]; exists {
+		for _, s := range strings.Split(v, ",") {
+			i, _ := strconv.Atoi(s)
+			values = append(values, i)
+		}
+	}
+	return values
 }

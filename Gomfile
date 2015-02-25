@@ -2,6 +2,7 @@
 
 gom 'github.com/BurntSushi/toml'
 gom 'github.com/garyburd/redigo/redis'
+gom 'github.com/disintegration/imaging'
 
 group :development do
   gom 'github.com/k0kubun/pp'

@@ -10,5 +10,5 @@ func NewRedisEngineAdapter() *RedisEngineAdapter {
 }
 
 func (adapter *RedisEngineAdapter) CacheKey(query *Query) string {
-	return url.QueryEscape(query.SourceUrl) + query.StringQueryParams()
+	return url.QueryEscape(query.SourceUrl) + query.Stringify()
 }
