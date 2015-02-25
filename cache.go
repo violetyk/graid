@@ -32,8 +32,13 @@ func NewCache() *Cache {
 		e = NewFileEngine()
 		a = NewFileEngineAdapter()
 	case "redis":
-		e = NewRedisEngine(config.Cache.Redis.Host, config.Cache.Redis.Port)
-		a = NewRedisEngineAdapter()
+		if config.Cache.Redis.Pool.Enable {
+			e = NewRedisPoolEngine()
+			a = NewRedisEngineAdapter()
+		} else {
+			e = NewRedisEngine(config.Cache.Redis.Host, config.Cache.Redis.Port)
+			a = NewRedisEngineAdapter()
+		}
 	}
 
 	var ok bool

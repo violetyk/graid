@@ -30,6 +30,12 @@ type cacheFile struct {
 type cacheRedis struct {
 	Host string `toml:"host"`
 	Port string `toml:"port"`
+	Pool cacheRedisPool
+}
+
+type cacheRedisPool struct {
+	Enable  bool `toml:"enable"`
+	MaxIdle int  `toml:"max_idle"`
 }
 
 type origin struct {

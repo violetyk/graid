@@ -14,5 +14,9 @@ engine = "Redis" # File or Redis
     host = "localhost"
     port = ":6379"
 
+  [cache.redis.pool]
+    enable = true
+    max_idle = 100
+
 [origin]
 url = "https://raw.githubusercontent.com/violetyk/graid/master/test_data"
