@@ -2,6 +2,9 @@
 
 Graphics and Images Proxy Daemon.
 
+## About
+- https://speakerdeck.com/violetyk/graid
+
 ## Requirements
 - [gom](https://github.com/mattn/gom)
 
