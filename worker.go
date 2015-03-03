@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -43,7 +42,8 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 
 	// parse query
 	if !worker.Query.Parse(r.URL.String()) {
-		errors.New("TODO: return 404")
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 
 	var data []byte
@@ -69,13 +69,15 @@ func (worker *Worker) Execute(w http.ResponseWriter, r *http.Request) {
 		beCached = true
 	}
 	if err != nil {
-		errors.New("TODO: return 404")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
 
 	// image
 	src, err := NewImage(data)
 	if err != nil {
-		errors.New("TODO: return 404")
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 
 	// process
