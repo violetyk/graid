@@ -8,11 +8,7 @@ import (
 	"strconv"
 )
 
-var httpClient *http.Client
-
-func init() {
-	httpClient = new(http.Client)
-}
+var httpClient = http.DefaultClient
 
 type Worker struct {
 	Id        int
